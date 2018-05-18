@@ -25,8 +25,17 @@ export const CompileUtil = {
             this._setVMVal(vm, property, newValue);
         });
     },
+    for(node, vm, property, childs) {
+        this.bindWatcherAndCallback(
+            node,
+            vm,
+            property.split(/\sin\s/)[1],
+            'for',
+            childs,
+        );
+    },
     // 根据初始化的data渲染视图
-    bindWatcherAndCallback(node, vm, property, directive) {
+    bindWatcherAndCallback(node, vm, property, directive, childs = null) {
         const updater = {
             textUpdater(value) {
                 // 不可以这么做，nodevalue只能对文本节点设值，但是模版里可能会直接在元素节点上挂在V-text
@@ -52,14 +61,38 @@ export const CompileUtil = {
             modelUpdater(value) {
                 node.value = value || '';
             },
+            forUpdater(value, children) {
+                const regexp = /(\{\{(.*?)\}\})/gi;
+                let str = '';
+                for (let index = 0; index < value.length; index += 1) {
+                    str += children.replace(regexp, (...rest) => {
+                        const childProperty = rest[2]
+                            .replace(/\s+/g, '')
+                            .split('.')[1];
+                        return value[index][childProperty];
+                    });
+                }
+                node.innerHTML = str;
+                // while (regexp.exec(children)) {
+                //     const p = RegExp.$2.replace(/\s+/g, '');
+                //     matches.push(p);
+                // }
+            },
         };
         const updaterFn = updater[`${directive}Updater`];
         // 第一次渲染 view, 此时Dep.readyWatcher还不存在，this._getVMVal只是得到值。
-        updaterFn && updaterFn(this._getVMVal(vm, property));
-        // 连接watcher和deps, 并触发访问属性的get函数
-        new Watcher(vm, property, value => {
-            updaterFn && updaterFn(value);
-        });
+        if (directive === 'for') {
+            updaterFn && updaterFn(this._getVMVal(vm, property), childs);
+            new Watcher(vm, property, value => {
+                updaterFn && updaterFn(value, childs);
+            });
+        } else {
+            updaterFn && updaterFn(this._getVMVal(vm, property));
+            // 连接watcher和deps, 并触发访问属性的get函数
+            new Watcher(vm, property, value => {
+                updaterFn && updaterFn(value);
+            });
+        }
     },
     eventHandler(node, vm, property, directive) {
         const eventType = directive.split(':')[1]; // on:click

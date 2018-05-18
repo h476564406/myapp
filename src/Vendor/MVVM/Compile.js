@@ -34,23 +34,23 @@ Compile.prototype = {
         [].slice.call(childNodes).forEach(node => {
             const { nodeType } = node;
             switch (nodeType) {
-            // 元素节点
-            case 1:
-                self.compileElement(node);
-                break;
+                // 元素节点
+                case 1:
+                    self.compileElement(node, node.childNodes);
+                    break;
                 // 文本节点
-            case 3:
-                const matches = node.nodeValue.match(/\{\{(.*)\}\}/);
-                // 提取到模版中{{ property }}格式
-                if (matches) {
-                    [CompileUtil.brace] = matches;
-                    self.compileText(node, matches[1].replace(/\s*/g, ''));
-                }
-                break;
-            default:
-                break;
+                case 3:
+                    const matches = node.nodeValue.match(/\{\{(.*)\}\}/);
+                    // 提取到模版中{{ property }}格式
+                    if (matches) {
+                        [CompileUtil.brace] = matches;
+                        self.compileText(node, matches[1].replace(/\s*/g, ''));
+                    }
+                    break;
+                default:
+                    break;
             }
-            // 如果该元素还有子节点, 继续解析
+            console.log('node', node);
             if (node.childNodes && node.childNodes.length) {
                 self.compileNode(node);
             }
@@ -73,6 +73,14 @@ Compile.prototype = {
                         property,
                         directive,
                     );
+                } else if (self.isForDirective(directive)) {
+                    CompileUtil[directive] &&
+                        CompileUtil[directive](
+                            node,
+                            self.$vm,
+                            property,
+                            node.innerHTML,
+                        );
                 } else {
                     // 普通指令
                     CompileUtil[directive] &&
@@ -91,6 +99,9 @@ Compile.prototype = {
     },
     isEventDirective(directive) {
         return directive.indexOf('on') === 0;
+    },
+    isForDirective(directive) {
+        return directive.indexOf('for') === 0;
     },
 };
 export default Compile;

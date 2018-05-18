@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start":
-            "eslint --fix src && webpack-dev-server --hot --inline --open --config webpack.dev.js",
+            "webpack-dev-server --hot --inline --open --config webpack.dev.js",
         "build":
             "eslint --fix src && npm run build:client && npm run build:server",
         "build:client": "eslint --fix src && webpack --config webpack.prod.js",

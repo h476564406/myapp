@@ -18,7 +18,7 @@
     "rules": {
         // 使console不报error， build的时候会自动去除
         "no-console": 0,
-        "indent": ["error", 4],
+        "indent": [0, 4],
         "max-len": [
             "error",
             { "code": 150, "ignoreStrings": true, "ignoreComments": true }
