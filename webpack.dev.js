@@ -91,27 +91,27 @@ module.exports = {
                     minSize: 1,
                 },
                 // 提取被两个以上的入口chunk引用的模块为公共模块
-                // entries: {
-                //     test: /src/,
-                //     chunks: 'initial',
-                //     minSize: 0,
-                //     minChunks: 2,
-                // },
-                // // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
-                // // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
-                // all: {
-                //     test: /src/,
-                //     chunks: 'all',
-                //     minSize: 0,
-                //     minChunks: 2,
-                // },
-                // // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
-                // async: {
-                //     test: /src/,
-                //     chunks: 'async',
-                //     minSize: 0,
-                //     minChunks: 2,
-                // },
+                entries: {
+                    test: /src/,
+                    chunks: 'initial',
+                    minSize: 0,
+                    minChunks: 2,
+                },
+                // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
+                // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
+                all: {
+                    test: /src/,
+                    chunks: 'all',
+                    minSize: 0,
+                    minChunks: 2,
+                },
+                // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
+                async: {
+                    test: /src/,
+                    chunks: 'async',
+                    minSize: 0,
+                    minChunks: 2,
+                },
             },
         },
     },

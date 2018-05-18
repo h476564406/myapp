@@ -50,7 +50,6 @@ Compile.prototype = {
                 default:
                     break;
             }
-            console.log('node', node);
             if (node.childNodes && node.childNodes.length) {
                 self.compileNode(node);
             }

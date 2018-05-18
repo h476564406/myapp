@@ -18,7 +18,7 @@ console.log('css', css);
 app.use('/dist', express.static('./dist'));
 
 // 调用构建出的 bundle_server.js 中暴露出的渲染函数，再拼接下 HTML 模版，形成完整的 HTML 文件
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.send(
         `<html>
@@ -35,6 +35,21 @@ app.get('*', (req, res) => {
     );
 });
 
+app.get('*', (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send(
+        `<html>
+            <head>
+                <meta charset="UTF-8">
+                ${css}
+            </head>
+            <body>
+                <div id="app"></div>
+                ${scripts}
+            </body>
+         </html>`,
+    );
+});
 app.listen(3000, () => {
     console.log('app listening on port 3000!');
 });
