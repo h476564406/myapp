@@ -2,15 +2,15 @@
 import HistoryRouter from './Route/HistoryRouter';
 // 直接加载
 import Home from './components/Home';
-import List from './components/List';
-import Detail from './components/Detail';
+// import List from './components/List';
+// import Detail from './components/Detail';
 
 // 异步加载，到某个时刻再加载
-// const List = () =>
-//     import(/* webpackChunkName: "list" */ './components/List.js');
+const List = () =>
+    import(/* webpackChunkName: "list" */ './components/List.js');
 
-// const Detail = () =>
-//     import(/* webpackChunkName: "detail" */ './components/Detail.js');
+const Detail = () =>
+    import(/* webpackChunkName: "detail" */ './components/Detail.js');
 
 const historyRouter = new HistoryRouter('#app');
 historyRouter.register('/', Home, 'home');

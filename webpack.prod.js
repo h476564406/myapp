@@ -37,7 +37,7 @@ module.exports = {
         // 样式不再内联到 javascript 里面，但会放到一个单独的 css 包文件 (styles.css)当中。
         new ExtractTextPlugin({
             filename: '[name].css',
-            allChunks: true,
+            allChunks: false,
         }),
         // 每次webpack重新生成index.html文件, 会自动生成在output path下面
         // 多页面应用时配置多个html的做法  https://www.cnblogs.com/wonyun/p/6030090.html
@@ -61,7 +61,7 @@ module.exports = {
         filename: '[name].[chunkhash].file.bundle.js',
         chunkFilename: '[name].[chunkhash].bundle.js',
         // html文件中的引用路径
-        // publicPath: '/dist/',
+        publicPath: '/dist/',
     },
     module: {
         rules: [

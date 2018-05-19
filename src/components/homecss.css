@@ -4,6 +4,6 @@
 }
 
 /* 会被编译的类名 */
-:global(.homeTitle) {
+:global(.blue) {
     background: #00e2ff;
 }
