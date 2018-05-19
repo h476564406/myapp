@@ -9,7 +9,6 @@ module.exports = {
         // 给出别名, 可以import别名， e.g. import 'MVVM', 而不是复杂的路径 e.g. import '../MVVM'
         alias: {
             MVVM: path.resolve(__dirname, 'src/Vendor/MVVM'),
-            Router: path.resolve(__dirname, 'src/Route'),
         },
         // 可以在js文件中不用加扩展名，会尝试以下扩展名
         extensions: ['.js', '.css', '.json'],

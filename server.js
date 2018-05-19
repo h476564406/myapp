@@ -11,6 +11,7 @@ let scripts = '';
 clientFileList.js.forEach(element => {
     scripts += `<script src="/dist/${element}"></script>`;
 }, this);
+
 console.log('scripts', scripts);
 console.log('css', css);
 

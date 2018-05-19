@@ -12,7 +12,6 @@ module.exports = {
         // 给出别名, 可以import别名， e.g. import 'MVVM', 而不是复杂的路径 e.g. import '../MVVM'
         alias: {
             MVVM: path.resolve(__dirname, 'src/Vendor/MVVM'),
-            Router: path.resolve(__dirname, 'src/Vendor/Route'),
         },
         // 可以在js文件中不用加扩展名，会尝试以下扩展名
         extensions: ['.js', '.css', '.json'],
@@ -34,20 +33,23 @@ module.exports = {
         new webpack.DefinePlugin({
             REQUEST_API: JSON.stringify('official'),
         }),
-        // 将该html文件中用到的所有css,移动到单独的 CSS 文件。
-        // 样式将不再内嵌到JS bundle中，而是会放到一个单独的 CSS 文件（即 [name].css）当中。
-        new ExtractTextPlugin({ filename: '[name].css' }),
+        // 它会将所有的 入口chunk (entry chunks) 中的 require("style.css") 移动到分开的 css 文件
+        // 样式不再内联到 javascript 里面，但会放到一个单独的 css 包文件 (styles.css)当中。
+        new ExtractTextPlugin({
+            filename: '[name].css',
+            allChunks: true,
+        }),
         // 每次webpack重新生成index.html文件, 会自动生成在output path下面
         // 多页面应用时配置多个html的做法  https://www.cnblogs.com/wonyun/p/6030090.html
         new HtmlWebpackPlugin({
             title: 'myapp',
             template: path.resolve(__dirname, 'src/index.ejs'),
             // 选择在html中所要引入的chunks, 如果不选择，则全部引入
-            chunks: ['vendors', 'index'],
+            // chunks: ['index'],
             // 是否默认在body的闭合标签前注入js, 在head头注入css
             inject: true,
             // 是否为所有注入的静态资源添加webpack每次编译产生的唯一hash值,
-            // hash: false,
+            hash: false,
         }),
         // 在每次构建前移除整个dist文件，再重新build生成dist目录
         new CleanWebpackPlugin(['dist']),
@@ -136,27 +138,27 @@ module.exports = {
                     minSize: 1,
                 },
                 // 提取被两个以上的入口chunk引用的模块为公共模块
-                entries: {
-                    test: /src/,
-                    chunks: 'initial',
-                    minSize: 0,
-                    minChunks: 2,
-                },
+                // entries: {
+                //     test: /src/,
+                //     chunks: 'initial',
+                //     minSize: 0,
+                //     minChunks: 2,
+                // },
                 // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
                 // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
-                all: {
-                    test: /src/,
-                    chunks: 'all',
-                    minSize: 0,
-                    minChunks: 2,
-                },
+                // all: {
+                //     test: /src/,
+                //     chunks: 'all',
+                //     minSize: 0,
+                //     minChunks: 2,
+                // },
                 // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
-                async: {
-                    test: /src/,
-                    chunks: 'async',
-                    minSize: 0,
-                    minChunks: 2,
-                },
+                // async: {
+                //     test: /src/,
+                //     chunks: 'async',
+                //     minSize: 0,
+                //     minChunks: 2,
+                // },
             },
         },
     },

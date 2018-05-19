@@ -1,9 +1,6 @@
 import Dep from './Dep';
-// 数据监听器 对数据对象的所有属性进行监听，发生变化了，通知订阅者
+// 数据监听器 对数据对象的所有属性进行监听，发生变化了，通知观察者Watchers
 export function Observer(data) {
-    if (Object.prototype.toString.call(data) !== '[object Object]') {
-        return false;
-    }
     Object.keys(data).forEach(property => {
         this.defineReactive(data, property, data[property]);
     });
@@ -15,11 +12,12 @@ export function observe(value) {
     return new Observer(value);
 }
 Observer.prototype = {
-    // 对data里的每个属性进行监听， 直到每个属性的子属性值为基本变量数据
+    // 对data里的每个属性进行监听， 直到每个属性的子属性值为基本类型的数据
     defineReactive(data, property, value) {
+        // Dep 是该属性的的 watcher collector
         const dep = new Dep(property);
-        // 如果不这么做，在访问子属性的时候子属性没办法被劫持，那么就无法触发watcher
-        // 让子属性也能被get劫持，并且和父属性挂在一个watcher上
+        // 如果不这么做，在访问子属性的时候子属性没办法触发get函数
+        // 让子属性也能被get劫持
         observe(value);
         Object.defineProperty(data, property, {
             enumerable: true,
@@ -44,11 +42,6 @@ Observer.prototype = {
                     return;
                 }
                 value = newValue;
-                // 如果该属性赋值的是对象，要监听这个对象。
-                // 赋值情况下才会被监听，data.child = {},改变对象的属性不会被监听data.child.property = ''
-                // childObj = observe(newValue);
-                // 通知订阅者
-                // console.log('dep', dep.name, dep);
                 dep.notify();
             },
         });

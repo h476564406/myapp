@@ -1,29 +1,23 @@
-/* <a href="#/index?index=1">index</a> */
-function HashRouter(beforeFun = null) {
-    this.beforeFun = beforeFun;
+/* Hash Router
+    1. Listen event 'load' and 'hashchange'.
+    2. Register url, store component path, component id.
+    3. When event trigged, use window.location.hash to get current url,
+        analyze it to pathname and query params.
+    4. If the analyzed result about pathname can be found in routers object,
+        ensure import the component file, and display the component.
+    @param string el the root div
+ */
+function HashRouter(el) {
+    this.el = el;
     this.init();
 }
 HashRouter.prototype = {
     _routers: {},
-    register(path, component = '') {
+    register(path, component = '', componentId) {
         path = path.replace(/\s*/g, '');
         this._routers[path] = {
-            name: path,
             component,
-        };
-    },
-    _processUrl(url) {
-        const urlDetails = url.split('?');
-        const params = [];
-        if (urlDetails.length > 1) {
-            const query = urlDetails[1].split('&');
-            query.forEach(value => {
-                params.push(value);
-            });
-        }
-        return {
-            name: urlDetails[0].slice(1),
-            params,
+            componentId,
         };
     },
     init() {
@@ -34,6 +28,21 @@ HashRouter.prototype = {
             this._urlChange();
         });
     },
+    _processUrl(url) {
+        const urlDetails = url.split('?');
+        const params = [];
+        if (urlDetails.length > 1) {
+            const query = urlDetails[1].split('&');
+            query.forEach(value => {
+                params.push(value);
+            });
+        }
+        // slice(1) 将'#'去掉。
+        return {
+            name: urlDetails[0].slice(1),
+            params,
+        };
+    },
     _urlChange() {
         const path = this._processUrl(window.location.hash).name;
         if (!this._routers[path]) {
@@ -42,43 +51,31 @@ HashRouter.prototype = {
         this._refresh(path);
     },
     _refresh(path) {
-        const self = this;
-        // if (self.beforeFun) {
-        //     self.beforeFun({
-        //         pathInfo: self._routers[path],
-        //         next: function() {
-        //             self._asyncLoad(self._routers[path].asyncJs, path);
-        //         },
-        //     });
-        // } else {
-        global.require(`../components/${self._routers[path].component}`);
-        // }
+        const childNodesArr = Array.prototype.slice.call(
+            document.querySelector(this.el).childNodes,
+        );
+        childNodesArr.forEach(element => {
+            if (element.nodeType === 1) {
+                element.style.display = 'none';
+            }
+        }, this);
+        if (typeof this._routers[path].component === 'function') {
+            this._routers[path].component().then(() => {
+                const element = document.getElementById(
+                    this._routers[path].componentId,
+                );
+                if (element) {
+                    element.style.display = 'block';
+                }
+            });
+        } else {
+            const element = document.getElementById(
+                this._routers[path].componentId,
+            );
+            if (element) {
+                element.style.display = 'block';
+            }
+        }
     },
-    // 切换之前一些处理
-    // beforeHook: function(callback) {
-    //     if (Object.prototype.toString.call(callback) === '[object Function]') {
-    //         this.beforeFun = callback;
-    //     } else {
-    //         console.log('路由切换前钩子函数不正确');
-    //     }
-    // },
-    // 路由异步懒加载js文件
-    // _asyncLoad(file, path) {
-    //     const self = this;
-    //     console.log(`开始异步下载js文件${file}`);
-    //     const _body = document.getElementsByTagName('body')[0];
-    //     const scriptEle = document.createElement('script');
-    //     scriptEle.type = 'text/javascript';
-    //     scriptEle.src = file;
-    //     scriptEle.onload = function() {
-    //         console.log(`下载${file}完成`);
-    //     };
-    //     _body.appendChild(scriptEle);
-    // },
 };
-// spaRouters.beforeHook(function(transition) {
-//     setTimeout(function() {
-//         transition.next('some params');
-//     }, 3000);
-// });
 export default HashRouter;

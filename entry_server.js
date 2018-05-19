@@ -1,12 +1,12 @@
 export function render() {
     return `
-    <div id='home' data-server-rendered="true">
+    <div id='home' data-server-rendered="true" style="dpadding: 0 20px">
         <h3>Home Page: I am global class.</h3>
         <h4>History Router:&nbsp;&nbsp;<a href="/list">list link</a>&nbsp;&nbsp;<a href="/detail">detail link</a></h4>
         <h4>V-model, input something.</h4>
         <input type="text" value="Hello">
         <p>Hello</p>
-        <input type="text" value="World !">
+        <textarea cols="20">World !</textarea>
         <p>World !</p>  
         <h4>Computed attribute</h4>
         <p>Hello World !</p>

@@ -22,8 +22,7 @@ FileListPlugin.prototype.apply = compiler => {
             js,
             css,
         });
-        console.log('clientFileList', clientFileList);
-        // console.log(compilation.assets[index.html].source());
+        // console.log(compilation.assets['index.html'].source());
         // 把它作为一个新的文件资源插入到 webpack 构建中：
         compilation.assets['clientFileList.json'] = {
             source() {

@@ -1,3 +1,12 @@
+/* History Router
+    1.  Listen event 'load' and 'popstate', all link should add click listener
+    2.  Register url, store component path, component id.
+    3. When event trigged, use window.location.href, window.history.state.path, e.target.getAttribute('href')
+    to get current path name,
+    4. If pathname can be found in routers object, use window.history.pushState and window.history.replaceState to change
+        browser url location. Then import the component file, and display the component.
+    @param string el the root div
+ */
 function HistoryRouter(el) {
     this.el = el;
     this._init();

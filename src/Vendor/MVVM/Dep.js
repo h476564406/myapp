@@ -1,9 +1,8 @@
-// 属性的id, watcher中用dep.id来判断是否已经监听某属性
+// 属性的id, watcher中用dep.id来判断该属性是否已经添加过watcher
 let id = 0;
-function Dep(name) {
+function Dep() {
     id += 1;
     this.id = id;
-    this.name = name;
     this.watchers = [];
 }
 Dep.target = null;
@@ -13,7 +12,6 @@ Dep.prototype = {
     },
     notify() {
         this.watchers.forEach(watcher => {
-            console.log(watcher);
             watcher.update();
         });
     },
