@@ -4,16 +4,18 @@ const { render } = require('./dist/bundle_server');
 
 const app = express();
 let css = '';
-clientFileList.css.forEach(element => {
-    css += ` <link rel="stylesheet" href="/dist/${element}">`;
+clientFileList.entryCss.forEach(element => {
+    css += ` <link rel="stylesheet" href="${clientFileList.publicPath}${element}">`;
 }, this);
-let scripts = '';
-clientFileList.js.forEach(element => {
-    scripts += `<script src="/dist/${element}"></script>`;
-}, this);
+// 坑: 服务端这边引入的js顺序一定要正确，
+// 1.先manifest.json, 否早报错: WebpackJsonP not found
+// 2. 引入vendor.js
+// 3. 再是入口文件
 
-console.log('scripts', scripts);
-console.log('css', css);
+let scripts = '';
+clientFileList.entryJs.forEach(element => {
+    scripts += `<script src="${clientFileList.publicPath}${element}"></script>`;
+}, this);
 
 // 其它请求路径返回对应的本地文件
 app.use('/dist', express.static('./dist'));

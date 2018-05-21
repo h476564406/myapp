@@ -16,7 +16,7 @@ module.exports = {
         // 可以在js文件中不用加扩展名，会尝试以下扩展名
         extensions: ['.js', '.css', '.json'],
     },
-    mode: 'production',
+    // mode: 'production',
     entry: {
         index: path.resolve(__dirname, 'src/index.js'),
     },
@@ -53,13 +53,41 @@ module.exports = {
         }),
         // 在每次构建前移除整个dist文件，再重新build生成dist目录
         new CleanWebpackPlugin(['dist']),
+        // 按顺序依次打包
+        // 1. 将子chunk的node_modules代码打包进父chunk(入口chunk: index)
+        new webpack.optimize.CommonsChunkPlugin({
+            children: true,
+            async: false,
+            minChunks(module) {
+                return /node_modules/.test(module.context);
+            },
+        }),
+        // 2. 将入口chunk的node_modules代码打包成vendor.bundle.js
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks(module) {
+                return /node_modules/.test(module.context);
+            },
+        }),
+        // 3. 将子chunk的公共代码打包进async-common并且采用异步加载
+        new webpack.optimize.CommonsChunkPlugin({
+            chidren: true,
+            async: 'async-common',
+            minChunks: 2,
+        }),
+        // 4. 新建一个manifest chunk, 不放入任何模块(minChunks:infinity).
+        // 由于manifest是此时唯一的entry chunk，则runtime代码放入manifest。
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'manifest',
+            minChunks: Infinity,
+        }),
     ],
     output: {
         path: path.resolve(__dirname, 'dist'),
         // 将hash替换为chunkhash, hash 是 build-specific ，即每次编译都不同——适用于开发阶段。
         // chunkhash，即文件内容变化，则文件名变化。这样自动利用浏览器缓存且不会妨碍文件更新。
-        filename: '[name].[chunkhash].file.bundle.js',
-        chunkFilename: '[name].[chunkhash].bundle.js',
+        filename: '[name].[chunkhash].entry.bundle.js',
+        chunkFilename: '[name].[chunkhash].async.bundle.js',
         // html文件中的引用路径
         publicPath: '/dist/',
     },
@@ -68,15 +96,12 @@ module.exports = {
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                loader: ['babel-loader?cacheDirectory=true', 'eslint-loader'],
+                loader: ['babel-loader', 'eslint-loader'],
             },
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
                 use: ExtractTextPlugin.extract({
-                    // extract默认行为先使用css-loader编译css，
-                    // 如果一切顺利的话，结束之后把css导出到规定的文件去。然后以link方式在</head>前引入
-                    // 如果编译过程中出现了错误，继续使用style-loader处理css。以style标签在</head>前引入
                     fallback: 'style-loader',
                     use: [
                         {
@@ -122,44 +147,44 @@ module.exports = {
             },
         ],
     },
-    optimization: {
-        minimize: true,
-        runtimeChunk: {
-            name: 'manifest',
-        },
-        splitChunks: {
-            cacheGroups: {
-                // 提取在入口chunk和异步载入的chunk中用到的所有node_modules下的第三方包，
-                // 并且打包出的chunk名称为vendors
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendors',
-                    chunks: 'all',
-                    minSize: 1,
-                },
-                // 提取被两个以上的入口chunk引用的模块为公共模块
-                // entries: {
-                //     test: /src/,
-                //     chunks: 'initial',
-                //     minSize: 0,
-                //     minChunks: 2,
-                // },
-                // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
-                // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
-                // all: {
-                //     test: /src/,
-                //     chunks: 'all',
-                //     minSize: 0,
-                //     minChunks: 2,
-                // },
-                // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
-                // async: {
-                //     test: /src/,
-                //     chunks: 'async',
-                //     minSize: 0,
-                //     minChunks: 2,
-                // },
-            },
-        },
-    },
+    // optimization: {
+    //     minimize: true,
+    //     runtimeChunk: {
+    //         name: 'manifest',
+    //     },
+    //     splitChunks: {
+    //         cacheGroups: {
+    //             // 提取在入口chunk和异步载入的chunk中用到的所有node_modules下的第三方包，
+    //             // 并且打包出的chunk名称为vendors
+    //             vendors: {
+    //                 test: /[\\/]node_modules[\\/]/,
+    //                 name: 'vendors',
+    //                 chunks: 'all',
+    //                 minSize: 1,
+    //             },
+    //             // 提取被两个以上的入口chunk引用的模块为公共模块
+    //             entries: {
+    //                 test: /src/,
+    //                 chunks: 'initial',
+    //                 minSize: 0,
+    //                 minChunks: 2,
+    //             },
+    //             // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
+    //             // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
+    //             all: {
+    //                 test: /src/,
+    //                 chunks: 'all',
+    //                 minSize: 0,
+    //                 minChunks: 2,
+    //             },
+    //             // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
+    //             async: {
+    //                 test: /src/,
+    //                 chunks: 'async',
+    //                 minSize: 0,
+    //                 minChunks: 2,
+    //             },
+    //         },
+    //     },
+    // },
 };

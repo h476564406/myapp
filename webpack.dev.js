@@ -13,14 +13,14 @@ module.exports = {
         // 可以在js文件中不用加扩展名，会尝试以下扩展名
         extensions: ['.js', '.css', '.json'],
     },
-    mode: 'development',
+    // mode: 'development',
     entry: {
         index: path.resolve(__dirname, 'src/index.js'),
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].[hash].file.bundle.js',
-        chunkFilename: '[name].[hash].chunk.bundle.js',
+        filename: '[name].entry.bundle.js',
+        chunkFilename: '[name].async.bundle.js',
     },
     // 生成map文件, 如果有错误，会报出在源文件中的位置而不是生成的bundle文件的位置
     devtool: 'source-map',
@@ -35,6 +35,34 @@ module.exports = {
             showErrors: true,
         }),
         new BundleAnalyzerPlugin(),
+        // 按顺序依次打包
+        // 1. 将子chunk的node_modules代码打包进父chunk(入口chunk: index)
+        new webpack.optimize.CommonsChunkPlugin({
+            children: true,
+            async: false,
+            minChunks(module) {
+                return /node_modules/.test(module.context);
+            },
+        }),
+        // 2. 将入口chunk的node_modules代码打包成vendor.bundle.js
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks(module) {
+                return /node_modules/.test(module.context);
+            },
+        }),
+        // 3. 将子chunk的公共代码打包进async-common并且采用异步加载
+        new webpack.optimize.CommonsChunkPlugin({
+            chidren: true,
+            async: 'async-common',
+            minChunks: 2,
+        }),
+        // 4. 新建一个manifest chunk, 不放入任何模块(minChunks:infinity).
+        // 由于manifest是此时唯一的entry chunk，则runtime代码放入manifest。
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'manifest',
+            minChunks: Infinity,
+        }),
     ],
     devServer: {
         historyApiFallback: true,
@@ -75,43 +103,43 @@ module.exports = {
         ],
     },
     // webpack4取消了common chunk，转而使用自带配置optimization
-    optimization: {
-        runtimeChunk: {
-            name: 'manifest',
-        },
-        splitChunks: {
-            cacheGroups: {
-                // 提取在入口chunk和异步载入的chunk中用到的所有node_modules下的第三方包，
-                // 并且打包出的chunk名称为vendors
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendors',
-                    chunks: 'all',
-                    minSize: 1,
-                },
-                // 提取被两个以上的入口chunk引用的模块为公共模块
-                entries: {
-                    test: /src/,
-                    chunks: 'initial',
-                    minSize: 0,
-                    minChunks: 2,
-                },
-                // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
-                // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
-                all: {
-                    test: /src/,
-                    chunks: 'all',
-                    minSize: 0,
-                    minChunks: 2,
-                },
-                // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
-                async: {
-                    test: /src/,
-                    chunks: 'async',
-                    minSize: 0,
-                    minChunks: 2,
-                },
-            },
-        },
-    },
+    // optimization: {
+    //     runtimeChunk: {
+    //         name: 'manifest',
+    //     },
+    //     splitChunks: {
+    //         cacheGroups: {
+    //             // 提取在入口chunk和异步载入的chunk中用到的所有node_modules下的第三方包，
+    //             // 并且打包出的chunk名称为vendors
+    //             vendors: {
+    //                 test: /[\\/]node_modules[\\/]/,
+    //                 name: 'vendors',
+    //                 chunks: 'all',
+    //                 minSize: 1,
+    //             },
+    //             // 提取被两个以上的入口chunk引用的模块为公共模块
+    //             entries: {
+    //                 test: /src/,
+    //                 chunks: 'initial',
+    //                 minSize: 0,
+    //                 minChunks: 2,
+    //             },
+    //             // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
+    //             // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
+    //             all: {
+    //                 test: /src/,
+    //                 chunks: 'all',
+    //                 minSize: 0,
+    //                 minChunks: 2,
+    //             },
+    //             // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
+    //             async: {
+    //                 test: /src/,
+    //                 chunks: 'async',
+    //                 minSize: 0,
+    //                 minChunks: 2,
+    //             },
+    //         },
+    //     },
+    // },
 };

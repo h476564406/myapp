@@ -2,7 +2,7 @@ const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-    mode: 'production',
+    // mode: 'production',
     entry: './entry_server.js',
     // target: 'node' 指明构建出的代码是要运行在node环境里.
     // 不把 Node.js 内置的模块打包进输出文件中，例如 fs net 模块等

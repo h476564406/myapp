@@ -1,9 +1,7 @@
 // import HashRouter from './Route/HashRouter';
 import HistoryRouter from './Route/HistoryRouter';
-// 直接加载
+// 同步加载
 import Home from './components/Home';
-// import List from './components/List';
-// import Detail from './components/Detail';
 
 // 异步加载，到某个时刻再加载
 const List = () =>
