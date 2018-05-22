@@ -36,7 +36,7 @@ module.exports = {
         // 它会将所有的 入口chunk (entry chunks) 中的 require("style.css") 移动到分开的 css 文件
         // 样式不再内联到 javascript 里面，但会放到一个单独的 css 包文件 (styles.css)当中。
         new ExtractTextPlugin({
-            filename: '[name].css',
+            filename: '[name].[contenthash].css',
             allChunks: false,
         }),
         // 每次webpack重新生成index.html文件, 会自动生成在output path下面
@@ -147,44 +147,4 @@ module.exports = {
             },
         ],
     },
-    // optimization: {
-    //     minimize: true,
-    //     runtimeChunk: {
-    //         name: 'manifest',
-    //     },
-    //     splitChunks: {
-    //         cacheGroups: {
-    //             // 提取在入口chunk和异步载入的chunk中用到的所有node_modules下的第三方包，
-    //             // 并且打包出的chunk名称为vendors
-    //             vendors: {
-    //                 test: /[\\/]node_modules[\\/]/,
-    //                 name: 'vendors',
-    //                 chunks: 'all',
-    //                 minSize: 1,
-    //             },
-    //             // 提取被两个以上的入口chunk引用的模块为公共模块
-    //             entries: {
-    //                 test: /src/,
-    //                 chunks: 'initial',
-    //                 minSize: 0,
-    //                 minChunks: 2,
-    //             },
-    //             // 提取被入口chunk或者异步载入的chunk所引用的总次数超过两次的模块为公共模块。
-    //             // 注: 如果该模块在某入口chunk中引入了，又在该入口chunk的异步chunk中引入了，引用次数算作1次。
-    //             all: {
-    //                 test: /src/,
-    //                 chunks: 'all',
-    //                 minSize: 0,
-    //                 minChunks: 2,
-    //             },
-    //             // 提取只被异步载入的chunk引用次数超过两次的模块为公共模块
-    //             async: {
-    //                 test: /src/,
-    //                 chunks: 'async',
-    //                 minSize: 0,
-    //                 minChunks: 2,
-    //             },
-    //         },
-    //     },
-    // },
 };

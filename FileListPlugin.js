@@ -5,12 +5,11 @@ function FileListPlugin() {
 }
 
 FileListPlugin.prototype.apply = compiler => {
+    // 调用的是tapable的plugin, 将插件添加到compiler对象
     compiler.plugin('emit', (compilation, callback) => {
         // console.log(compiler.hooks);
-        // console.log('compilation', compilation);
         // console.log('compilation', compilation.chunks);
         const stats = compilation.getStats().toJson();
-        fs.writeFile('./compilationStats.json', JSON.stringify(stats));
         const allFiles = stats.assets.map(asset => asset.name);
         const entryFiles = Object.keys(stats.entrypoints)
             .map(entryName => stats.entrypoints[entryName].assets)
@@ -37,7 +36,6 @@ FileListPlugin.prototype.apply = compiler => {
             asyncFiles,
             publicPath: stats.publicPath,
         });
-        // console.log(compilation.assets['index.html'].source());
         // 把它作为一个新的文件资源插入到 webpack 构建中：
         compilation.assets['clientFileList.json'] = {
             source() {

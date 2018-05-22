@@ -9,11 +9,11 @@ export const template = `
         <h4>History Router:&nbsp;&nbsp;<a href="/list">list link</a>&nbsp;&nbsp;<a href="/detail">detail link</a></h4>
         <h4>V-model, input something.</h4>
         <input type="text" v-model="someStr">
-        <p v-class="className"> {{someStr}}</p>
+        <p v-text="someStr" v-class="className"></p>
         <textarea v-model="child.someStr" cols="20"></textarea>
         <p v-text="child.someStr" v-class="className"></p>
         <h4>Computed attribute</h4>
-        <p  v-class="className">{{getHelloWord}}</p>
+        <p v-class="className" v-text="getHelloWord"></p>
         <h4>V-on:click  <button v-on:click="clickBtn">Change data</button></h4>
         <h4>V-html</h4>
         <div v-html="child.htmlStr"></div>

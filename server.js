@@ -26,9 +26,12 @@ app.get('/', (req, res) => {
     res.send(
         `<html>
             <head>
-                <meta charset="UTF-8">
-                ${css}
-            </head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <title>My app</title>
+            ${css}
+        </head>
             <body>
                 <div id="app">${render()}</div>
                 <!--导入 Webpack 输出的用于浏览器端渲染的 JS 文件-->

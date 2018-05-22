@@ -4,7 +4,7 @@ import styles from './detailcss';
 export const id = 'detail';
 const template = `
     <div id=${id} style="display: none">
-        <h3 class=${styles.detailTitle}>Detail Page: I am local class</h3>
+        <h3 class=${styles.detailTitle}>{{ title }}</h3>
         <span>我是Detail组件，只由浏览器渲染，并且在进入到detail路由时异步加载。</span>
         <p><a href="/">home link</a>&nbsp;&nbsp;<a href="/list">list link</a></p>
     </div>`;
@@ -14,6 +14,8 @@ export const Detail = new MVVM({
     id,
     el: '#app',
     data() {
-        return {};
+        return {
+            title: 'Detail Page: I am local class',
+        };
     },
 });

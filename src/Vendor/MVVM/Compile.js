@@ -15,11 +15,12 @@ function Compile(el, vm) {
         const templateDiv = document.createElement('div');
         templateDiv.innerHTML = vm.$options.template;
         this.$fragment = this.generateFragment(templateDiv);
-        this.compileNode(this.$fragment);
-        // 如果这个组件标明启用了服务器渲染，因为服务端返回的html中已经存在该节点，采用replaceChild的方式。
+        // 如果这个组件标明启用了服务器渲染, 直接解析服务端返回的html.
         if (this.$component && this.$component.dataset.serverRendered) {
-            this.$el.replaceChild(this.$fragment, this.$component);
+            this.compileNode(this.$component);
+            // this.$el.replaceChild(this.$fragment, this.$component);
         } else {
+            this.compileNode(this.$fragment);
             this.$el.appendChild(this.$fragment);
         }
     }

@@ -13,7 +13,7 @@
             "eslint --fix src && webpack --config webpack.server.js",
         "lint": "eslint --ext .js src",
         "debug":
-            "npm run build -- --progress --colors --profile --display-modules --display-reasons --display-error-details",
+            "npm run build:client -- --progress --colors --profile --display-modules --display-reasons --display-error-details",
         "analyze":
             "webpack --config webpack.prod.js --profile --json > stats.json"
     },

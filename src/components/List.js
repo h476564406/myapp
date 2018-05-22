@@ -4,7 +4,7 @@ import styles from './listcss';
 export const id = 'list';
 const template = `
     <div id=${id} style="display: none">
-        <h3 class=${styles.listTitle}>List Page: I am local class</h3>
+        <h3 class=${styles.listTitle}>{{ title }}</h3>
         <span>我是List组件，只由浏览器渲染，并且在进入到list路由时异步加载。</span>
         <p><a href="/">home link</a>&nbsp;&nbsp;<a href="/detail">detail link</a></p>
     </div>`;
@@ -14,6 +14,8 @@ export const List = new MVVM({
     el: '#app',
     id,
     data() {
-        return {};
+        return {
+            title: 'List Page: I am local class',
+        };
     },
 });
