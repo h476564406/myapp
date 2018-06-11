@@ -1,5 +1,12 @@
 [线上效果 http://47.96.13.73/](http://47.96.13.73/)
 
+[myapp的启动](https://github.com/h476564406/myapp#myapp%E7%9A%84%E5%90%AF%E5%8A%A8)
+
+[myapp实现了什么](https://github.com/h476564406/myapp#myapp%E5%AE%9E%E7%8E%B0%E4%BA%86%E4%BB%80%E4%B9%88)
+
+[myapp存在的问题](https://github.com/h476564406/myapp#myapp%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98)
+
+
 # myapp的启动
 如果要查看同构效果
 
@@ -94,7 +101,7 @@ text(node, vm, property) {
     this.bindWatcherAndCallback(node, vm, property, 'text');
 },
 
- bindWatcherAndCallback(node, vm, property, directive, nodeHtml = null) {
+bindWatcherAndCallback(node, vm, property, directive, nodeHtml = null) {
 	 const updaterFn = updater[`${directive}Updater`];
     // 第一次渲染 view, 此时Dep.readyWatcher还不存在, 被触发的getter函数只是得到值，并没有绑定watcher
    updaterFn && updaterFn(this._getVMVal(vm, property));
@@ -223,7 +230,7 @@ server.js返回的html中加入
 browser.js中
 
 ```
-// `__INITIAL_STATE__` 来自服务器端渲染，下一部分细说
+// __INITIAL_STATE__ 来自服务器端
 const initialState = window.__INITIAL_STATE__;
 const store = configureStore(initialState);
 ```
@@ -309,9 +316,9 @@ const store = configureStore(initialState);
 	```
 	如何在服务端的html中剥离掉指令？
 	
-	解决： 基于第一个问题的解决，再融入简单的虚拟dom机制， 虚拟dom映射真实dom。 先将组件分析为虚拟dom, 再根据虚拟dom生成服务端的html.
+	解决： 基于第一个问题的解决，再融入简单的虚拟dom机制， 虚拟dom映射真实dom。先将组件分析为虚拟dom, 再根据虚拟dom生成服务端的html.
 
-3. 对于前端切换路由时， 已经载入的component如何处理？ 当前代码中粗暴地用了display: none，这种方式是要改进的。
+3. 对于前端切换路由时， 已经载入的component如何处理？ 当前代码中粗暴地用了display: none，待改进。
 
  
 
