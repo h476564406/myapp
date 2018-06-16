@@ -12,31 +12,31 @@ function Compile(el, vm) {
     // 从document中尝试获取该组件id的元素，来判断是否是服务器渲染
     this.$component = document.getElementById(this.$vm.$options.id);
     if (this.$el !== null) {
-        const templateDiv = document.createElement('div');
-        templateDiv.innerHTML = vm.$options.template;
-        this.$fragment = this.generateFragment(templateDiv);
-        // 如果这个组件标明启用了服务器渲染, 直接解析服务端返回的html.
+        const $templateDiv = document.createElement('div');
+        $templateDiv.innerHTML = vm.$options.template;
+        // console.log($templateDiv);
+        // this.$fragment = this.generateFragment($templateDiv);
+        // // 如果这个组件标明启用了服务器渲染, 直接解析服务端返回的html.
         if (this.$component && this.$component.dataset.serverRendered) {
             this.compileNode(this.$component);
-            // this.$el.replaceChild(this.$fragment, this.$component);
         } else {
-            this.compileNode(this.$fragment);
-            this.$el.appendChild(this.$fragment);
+            this.compileNode($templateDiv);
+            this.$el.appendChild($templateDiv);
         }
     }
 }
 Compile.prototype = {
-    generateFragment(templateDiv) {
-        const fragment = document.createDocumentFragment();
-        let child = templateDiv.firstChild;
-        // 如果fragment.appendChild的参数是已有的元素，会从tempDiv里移除
-        // 把templateDiv里面的第一层节点全部移到fragment中
-        while (child) {
-            fragment.appendChild(child);
-            child = templateDiv.firstChild;
-        }
-        return fragment;
-    },
+    // generateFragment(templateDiv) {
+    //     const fragment = document.createDocumentFragment();
+    //     let child = templateDiv.firstChild;
+    //     // 如果fragment.appendChild的参数是已有的元素，会从tempDiv里移除
+    //     // 把templateDiv里面的第一层节点全部移到fragment中
+    //     while (child) {
+    //         fragment.appendChild(child);
+    //         child = templateDiv.firstChild;
+    //     }
+    //     return fragment;
+    // },
     // 分析templateFragment中的节点， 按不同的类型分调函数处理。
     compileNode(templateFragment) {
         const { childNodes } = templateFragment;
